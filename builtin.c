@@ -1,0 +1,59 @@
+#include "builtin.h"
+
+char *built_in[] = {"help", "exit", "cd"};
+
+int nb_built_in(void){
+  return sizeof(built_in)/sizeof(char*);
+}
+
+int sh_cd(char **args){
+  //printf("cd\n");
+  char *old_path = getcwd(NULL, 0);//to be freed
+  if(args[1] == NULL){
+    chdir(getenv("HOME"));
+    if((path = getcwd(NULL, 0)) == NULL){//cannot obtain path to HOME
+      perror("getcwd() error");
+    }
+    reformat_path();
+  } else if(chdir(args[1]) == -1){//cannot chane the path to the given one
+    perror("shell chdir");
+  } else {
+    //free(path);
+    if((path = getcwd(NULL, 0)) == NULL){//
+      perror("getcwd() error");
+    }
+    reformat_path();
+  }
+  //printf("end cd\n");
+  free(old_path);
+  return 1;
+}
+
+int sh_help(char **args){
+  if(args[1] == NULL){
+    printf("Welcome to shell ! \n\n");
+    printf("Use help name to know more about an internal shell command(following list)\n");
+    printf("Use man -k to know more about commands not in this list\n");
+    printf("Here is the list of builtin commands : \n");
+
+    for(int i = 0; i < nb_built_in(); ++i){//rewrite with **pointer increment
+      printf("%s\n", built_in[i]);
+    }
+
+    } else {
+    if(strcmp(args[1], built_in[0])){
+      printf("Print some help about the shell. %s\n", built_in[0]);
+    } else if (strcmp(args[1], built_in[2])){
+      printf("Change the shell working directory by moving to the directory given as argument.\n");
+    } else if (strcmp(args[1], built_in[1])){
+      printf("Quit the shell.\n");
+    } else {
+      printf("Not a builtin command");
+    }
+  }
+  return 1;
+}
+
+int sh_exit(char **args){
+  return 0;
+}
