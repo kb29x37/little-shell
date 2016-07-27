@@ -46,7 +46,7 @@ int main(int argc, char **argv){
   sh_loop();
   printf("out of the loop\n");
 
-  clean();//free the linked list segfault with 1 in the linked list 
+  clean();//free the linked list segfault with 1 in the linked list
   free(host);
   free(path);
   free(login);
@@ -209,7 +209,7 @@ void reformat_path(){
   }
 
   int position = 0;
-  char *new_path = calloc(1, sizeof(path));
+  char *new_path = calloc(1, 2048);//change the 2048, temporary
   char *orig = new_path;
   int home = 0;
   int last = 1;
