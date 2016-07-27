@@ -46,7 +46,7 @@ int main(int argc, char **argv){
   sh_loop();
   printf("out of the loop\n");
 
-  clean();//free the linked list (sometimes segfault ? )
+  clean();//free the linked list segfault with 1 in the linked list 
   free(host);
   free(path);
   free(login);

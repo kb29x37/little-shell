@@ -17,8 +17,12 @@ int sh_cd(char **args){
     reformat_path();
   } else {
     if(args[1][0] == '~'){
-      chdir(getenv("HOME"));
-      strcpy(args[1], args[1]+2);
+      if(args[1][1] == '\0'){
+        args[1] = getenv("HOME");
+      } else {
+        chdir(getenv("HOME"));
+        strcpy(args[1], args[1]+2);
+      }
     }
 
     if(chdir(args[1]) != 0){

@@ -5,14 +5,17 @@ list_data *create(){
 }
 
 void destroy(list_data *l){//check for any error in freeing pointers ?
+  printf("last is : %s\n", l->last->s);
   foreach(node, l){
     if(node->prev) {
+      printf("node->prev->s %s  %s\n", node->prev->s, node->s);
       free(node->prev->s);
       free(node->prev);
+      printf("no supposed to\n");
     }
   }
-  free(l->last->s);
-  free(l->last);
+  free(l->head->s);
+  free(l->head);
   free(l);
 }
 
