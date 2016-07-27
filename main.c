@@ -46,10 +46,10 @@ int main(int argc, char **argv){
   sh_loop();
   printf("out of the loop\n");
 
-  clean();//free the linked list
+  clean();//free the linked list (sometimes segfault ? )
   free(host);
   free(path);
-  //free(login);
+  free(login);
   return EXIT_SUCCESS;
 }
 
@@ -59,7 +59,7 @@ void sh_loop(void){
   char **args;
   int cont;//if exit, close the shell
   do{
-    printf("%s%s%s@%s%s%s:%s%s\n->", MAG, login, NRM, BLU, host, RED, path, NRM);
+    fprintf(stdout, "%s%s%s@%s%s%s:%s%s\n->", MAG, login, NRM, BLU, host, RED, path, NRM);
     line = read_line();
     //printf("line : %s\n", line);
     args = read_args(line);
@@ -200,6 +200,7 @@ int launch(char **args){
 
 void reformat_path(){
   char *curr = path;
+  char *old = path;
   char buf[64];
 
   //initialize the buffer to an empty one
@@ -208,20 +209,20 @@ void reformat_path(){
   }
 
   int position = 0;
-  char *new_path = malloc(sizeof(path));//a litle to big in most of the cases
+  char *new_path = calloc(1, sizeof(path));
   char *orig = new_path;
   int home = 0;
   int last = 1;
 
-  while(*curr != '\0' || last){//redo a func ?
+  while(*curr != '\0' || last){
     if(*curr == '\0'){
       last = 0;
     }
     if(*curr == '/' || last == 0){
-      //printf("buf : %s\n", buf);
+      printf("buf : %s\n", buf);
       if(strcmp(HOME, buf) == 0){//here in home
         home = 1;
-        //printf("here home\n");
+        printf("here home\n");
         if(last == 0){
           *new_path++ = '/';
           for(int i = 0; i < position; ++i){
@@ -231,14 +232,14 @@ void reformat_path(){
 
       } else if (home == 1 && strcmp(login, buf) == 0){//here in /home/user
         home = 0;
-        *new_path++ = '~';//replace /home.usr by ~
+        *new_path++ = '~';//replace /home/usr by ~
         if(last == 0){
           *new_path++ = '/';
         }
-        //printf("here %s\n", login);
+        printf("here %s\n", login);
 
       } else if (home == 1) {
-        //printf("here = 1 : %s, %s and %d\n", login, buf, strcmp(login, buf));
+        printf("here = 1 : %s, %s and %d\n", login, buf, strcmp(login, buf));
         home = 0;
         *new_path++ = '/';
         for(int i = 0; i < 4; ++i){
@@ -248,10 +249,10 @@ void reformat_path(){
         for(int i = 0; i < position; ++i){
           *new_path++ = buf[i];
         }
-        //printf("here end 1\n");
+        printf("here end 1\n");
 
       } else  {
-        //printf("here updtate\n");
+        printf("here updtate\n");
         if(position > 0) {
           *new_path++ = '/';
         }
@@ -260,16 +261,16 @@ void reformat_path(){
         }
       }
 
-      for(int i = 0; i < position; ++i){//buffer reset
+      for(int i = 0; i < position+1; ++i){//buffer reset
         buf[i] = '\0';
       }
       position = 0;
-      //printf("buf after clear %s\n", buf);
+      printf("buf after clear %s\n", buf);
     } else {
       buf[position] = *curr;
       ++position;
-      //printf("here end %c\n", *curr);
-      //printf("buf : %s\n", buf);
+      printf("here end %c\n", *curr);
+      printf("buf : %s\n", buf);
       }
     ++curr;
   }
@@ -278,7 +279,7 @@ void reformat_path(){
     *new_path++ = '/';
     *new_path = '\0';
   }
-  free(path);//free the old path
+  free(old);//free the old path
   path = orig;
-  //printf("path after formating : %s\n", path);
+  printf("path after formating : %s\n", path);
 }

@@ -15,14 +15,20 @@ int sh_cd(char **args){
       perror("getcwd() error");
     }
     reformat_path();
-  } else if(chdir(args[1]) == -1){//cannot chane the path to the given one
-    perror("shell chdir");
   } else {
-    //free(path);
-    if((path = getcwd(NULL, 0)) == NULL){//
-      perror("getcwd() error");
+    if(args[1][0] == '~'){
+      chdir(getenv("HOME"));
+      strcpy(args[1], args[1]+2);
     }
-    reformat_path();
+
+    if(chdir(args[1]) != 0){
+      perror("chdir error");
+    } else {
+      if((path = getcwd(NULL, 0)) == NULL){
+        perror("getcwd error");
+      }
+      reformat_path();
+    }
   }
   //printf("end cd\n");
   free(old_path);
