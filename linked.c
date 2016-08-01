@@ -1,22 +1,27 @@
 #include "adds.h"
 
 list_data *create(){
-  return calloc(1, sizeof(list_data));//see what calloc do !!
+  return calloc(1, sizeof(list_data));
 }
 
-void destroy(list_data *l){//check for any error in freeing pointers ?
-  printf("last is : %s\n", l->last->s);
+int *dir; //if add reset
+
+void destroy(list_data *l){
+  //printf("last is : %s\n", l->last->s);
   foreach(node, l){
-    if(node->prev) {
-      printf("node->prev->s %s  %s\n", node->prev->s, node->s);
-      free(node->prev->s);
-      free(node->prev);
-      printf("no supposed to\n");
+    if(node->next) {
+      //printf("node->prev->s %s  %s\n", node->next->s, node->s);
+      free(node->next->s);
+      free(node->next);
+      //printf("no supposed to\n");
     }
   }
-  free(l->head->s);
-  free(l->head);
+  free(l->last->s);
+  free(l->last);
   free(l);
+  if(dir){
+    free(dir);
+  }
 }
 
 //add the new elements at the beginning of the list
@@ -30,9 +35,12 @@ void put(list_data *l, char *s){
     l->head = l->last = l->curr = node;
 
   } else {//list has at least one element
-    l->head->next = node; //find why this don't work
+    l->head->next = node;
     node->prev = l->head;
     l->head = l->curr = node;
+    if(l->last->next == NULL){
+      l->last->next = node;
+    }
   }
 
   if(l->size == MAX){//delete the last node
@@ -45,44 +53,65 @@ void put(list_data *l, char *s){
   }
 }
 
-int prev;
-
 //sometimes curr goes to NULL -> get rid of this
 
-char *get_next(list_data *l){
-  if(l->curr == NULL){
-    return "";//end of the list
-  }
+//if curr goes to null send it back the value of the head or of the last
+//if any change in direction, tail twice the position in the linked list
+//don't care of null because of head and last (see with direction)
 
-  if(prev == 2){
-    l->curr = l->curr->next;
+char *get_next(list_data *l){
+  //print_list(l);
+  if(!dir){
+    dir = calloc(1, sizeof(int));
+  }
+  printf("dir %d\t", *dir);
+  if(l->curr == NULL){
+    printf("goes to head\n");
+    l->curr = *dir == NEXT ? l->head : l->last->next;
+    *dir = NEXT;
   }
 
   char *to_return = l->curr->s;
 
-  if(prev != 2){
+  if(*dir == NEXT || *dir == 0){//same direction as before
     l->curr = l->curr->next;
+  } else {
+    l->curr = (l->curr->next == NULL) ? l->head : l->curr->next->next;
+    to_return = l->curr->s;
   }
 
-  prev = 1;
+  *dir = NEXT;
   return to_return;
 }
 
 char *get_previous(list_data *l){
-  if(l->curr == NULL){
-    return "";
+  //print_list(l);
+  if(!dir){
+    dir = calloc(1, sizeof(int));
   }
-
-  if(prev == 1){
-    l->curr = l->curr->prev;
+  printf("dir %d\t", *dir);
+  if(l->curr == NULL){
+    printf("goes to last\n");
+    l->curr = *dir == PREV ? l->last : l->head->prev;
+    *dir = PREV;
   }
 
   char *to_return = l->curr->s;
 
-  if(prev != 1){
+  if(*dir == PREV || *dir == 0){
     l->curr = l->curr->prev;
+  } else {
+    printf("diff dir\n");
+    l->curr = (l->curr->prev == NULL) ? l->last : l->curr->prev->prev;
+    to_return = l->curr->s;
   }
 
-  prev = 2;
+  *dir = PREV;
   return to_return;
+}
+
+void print_list(list_data *l){
+  foreach(node, l){
+    printf("%s\n", node->s);
+  }
 }

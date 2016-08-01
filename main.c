@@ -22,6 +22,7 @@ int main(int argc, char **argv){
   login = malloc(sizeof(char) * ARG_BUF);
   host = malloc(sizeof(char) * ARG_BUF);
 
+
   //get path
   if((path = getcwd(NULL, 0)) == NULL){//getcwd allocate dynamically the path
     perror("getcwd() error");
@@ -219,10 +220,10 @@ void reformat_path(){
       last = 0;
     }
     if(*curr == '/' || last == 0){
-      printf("buf : %s\n", buf);
+      //printf("buf : %s\n", buf);
       if(strcmp(HOME, buf) == 0){//here in home
         home = 1;
-        printf("here home\n");
+        //printf("here home\n");
         if(last == 0){
           *new_path++ = '/';
           for(int i = 0; i < position; ++i){
@@ -239,7 +240,7 @@ void reformat_path(){
         printf("here %s\n", login);
 
       } else if (home == 1) {
-        printf("here = 1 : %s, %s and %d\n", login, buf, strcmp(login, buf));
+        //printf("here = 1 : %s, %s and %d\n", login, buf, strcmp(login, buf));
         home = 0;
         *new_path++ = '/';
         for(int i = 0; i < 4; ++i){
@@ -249,10 +250,10 @@ void reformat_path(){
         for(int i = 0; i < position; ++i){
           *new_path++ = buf[i];
         }
-        printf("here end 1\n");
+        //printf("here end 1\n");
 
       } else  {
-        printf("here updtate\n");
+        //printf("here updtate\n");
         if(position > 0) {
           *new_path++ = '/';
         }
@@ -265,12 +266,12 @@ void reformat_path(){
         buf[i] = '\0';
       }
       position = 0;
-      printf("buf after clear %s\n", buf);
+      //printf("buf after clear %s\n", buf);
     } else {
       buf[position] = *curr;
       ++position;
-      printf("here end %c\n", *curr);
-      printf("buf : %s\n", buf);
+      //printf("here end %c\n", *curr);
+      //printf("buf : %s\n", buf);
       }
     ++curr;
   }
@@ -281,5 +282,5 @@ void reformat_path(){
   }
   free(old);//free the old path
   path = orig;
-  printf("path after formating : %s\n", path);
+  //printf("path after formating : %s\n", path);
 }

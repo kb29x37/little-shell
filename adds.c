@@ -11,14 +11,16 @@ void add_command(char *a){
   printf("succeded to put in the structure\n");
 }
 
-char *get_next_cmd(){
-  return get_next(l);
+char *get_next_cmd(){//getch and ungetch necessary ?
+  return !l ? "" : get_next(l);
 }
 
 char *get_previous_cmd(){
-  return get_previous(l);
+  return !l ? "" : get_previous(l);
 }
 
 void clean(){
-  destroy(l);
+  if(l){
+    destroy(l);
+  }
 }

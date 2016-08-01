@@ -1,13 +1,15 @@
 #ifndef adds_h
 #define adds_h
 
-#include <sys/types.h>//getuid
-#include <pwd.h>//getuid
+#include <sys/types.h>
+#include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAX 512
+#define PREV 1
+#define NEXT 2
 
 //double linked list related stuff
 
@@ -27,6 +29,7 @@ typedef struct list_data {
 
 list_data *create(void);
 void destroy(list_data *);
+void print_list(list_data *);
 
 void put(list_data *, char *);
 char *get_next(list_data *);
@@ -43,6 +46,6 @@ void clean(void);
 //useful maccro
 
 #define foreach(item, list) \
-  for(t_node *item = list->head; item != NULL; item = item->next)
+  for(t_node *item = list->head; item != NULL; item = item->prev)
 
 #endif
