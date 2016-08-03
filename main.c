@@ -64,20 +64,14 @@ void sh_loop(void){
     fprintf(stdout, "%s%s%s@%s%s%s:%s%s\n->", MAG, login, NRM, BLU, host, RED, path, NRM);
     fflush(stdout);
     line = read_line();
-    //printf("line : %s\n", line);
     args = read_args(line);
 
-    /*for(int i = 0; i < 4; ++i){
-      printf("args : %s \n", args[i]);
-      }*/
-
     cont = execute(args);
-    //printf("cont = %d\n", cont);
   }while(cont);
 }
 
-char *read_line(){//don't forget to handle erasures
-  char *line = malloc(sizeof(char) * BUFFER_SIZE);//line = cursor ?
+char *read_line(){
+  char *line = malloc(sizeof(char) * BUFFER_SIZE);
   if(!line){
     fprintf(stderr, "cannot allocate memory");
   }
@@ -135,17 +129,15 @@ char **read_args(char *line){//rename to parse
 
   //iterate throught the line to parse it
   while((*readed = *line++)){
-    if(*readed == ' '){//add some delimiters ?
+    if(*readed == ' '){
       *readed = '\0';
       *args++ = orig;//orig point to the beginning of the (last) word
       orig = readed + 1;//update orig to the next word beginin
-      //printf("line : %s\n", line);
     }
 
     readed++;
-    //printf("line : %s\n", line);
   }
-  *args = orig;//see here
+  *args = orig;
   readed = NULL;
   readed = orig;
   printf("readed : %s\n", readed);
@@ -159,12 +151,9 @@ int execute(char **args){
   if(args == NULL || *args[0] == '\0'){
     return 1;
   }
-  //printf("nb : %d\n", nb_built_in());
 
   for(int i = 0; i < nb_built_in(); ++i){
-    //printf("%d  %s\n", i, built_in[i]);
     if(strcmp(args[0], built_in[i]) == 0){
-      //printf("here at i = %d\n", i);
       return (*builtin_func[i])(args);
     }
   }
@@ -183,7 +172,6 @@ int launch(char **args){
       return sh_exit(args);//exiting child process in case of error
     }
   } else if (pid == -1) {
-    //error here
     fprintf(stderr, "cannot create child process");
   } else {
     //pid = child pid
