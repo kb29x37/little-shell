@@ -1,10 +1,11 @@
 EXEC=shell
-CFLAGS	+=	-I  -pedantic
+CFLAGS	+=	-I  -pedantic -Wall
 RM = rm -f
 SRC = adds.c \
 			builtin.c \
 			main.c \
-			linked.c
+			linked.c \
+			display.c
 OBJ = $(SRC:.c=.o)
 
 all : $(EXEC)
@@ -18,10 +19,13 @@ main.o : main.c builtin.h
 builtin.o : builtin.c builtin.h
 	gcc -o $@ -c $< $(CFLAGS)
 
-adds.o : adds.c
+adds.o : adds.c adds.h
 	gcc -o $@ -c $< $(CFLAGS)
 
 linked.o : linked.c adds.h
+	gcc -o $@ -c $< $(CFLAGS)
+
+display.o : display.c builtin.h
 	gcc -o $@ -c $< $(CFLAGS)
 
 clean :

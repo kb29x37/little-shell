@@ -28,6 +28,7 @@ void destroy(list_data *l){
 //if the list is full, remove the last element
 void put(list_data *l, char *s){
   t_node *node = calloc(1, sizeof(t_node));
+  dir = 0;
 
   node->s = s;
 
@@ -59,16 +60,22 @@ void put(list_data *l, char *s){
 //if any change in direction, tail twice the position in the linked list
 //don't care of null because of head and last (see with direction)
 
+//some problems with up and down directly -> goes to NULL and try to read on null
+
 char *get_next(list_data *l){
   //print_list(l);
   if(!dir){
     dir = calloc(1, sizeof(int));
   }
-  printf("dir %d\t", *dir);
+  //printf("dir %d\t", *dir);
   if(l->curr == NULL){
-    printf("goes to head\n");
-    l->curr = *dir == NEXT ? l->head : l->last->next;
-    *dir = NEXT;
+    //printf("goes to head\n");
+    if(l->size == 1){
+      l->curr = l->head;
+    } else {
+      l->curr = (*dir == NEXT) ? l->head : l->last->next;
+      *dir = NEXT;
+    }
   }
 
   char *to_return = l->curr->s;
@@ -89,11 +96,15 @@ char *get_previous(list_data *l){
   if(!dir){
     dir = calloc(1, sizeof(int));
   }
-  printf("dir %d\t", *dir);
+  //printf("dir %d\t", *dir);
   if(l->curr == NULL){
-    printf("goes to last\n");
-    l->curr = *dir == PREV ? l->last : l->head->prev;
-    *dir = PREV;
+    //printf("goes to last\n");
+    if(l->size == 1){
+      l->curr = l->head;
+    } else {
+      l->curr = (*dir == PREV) ? l->last : l->head->prev;
+      *dir = PREV;
+    }
   }
 
   char *to_return = l->curr->s;
@@ -101,7 +112,7 @@ char *get_previous(list_data *l){
   if(*dir == PREV || *dir == 0){
     l->curr = l->curr->prev;
   } else {
-    printf("diff dir\n");
+    //printf("diff dir\n");
     l->curr = (l->curr->prev == NULL) ? l->last : l->curr->prev->prev;
     to_return = l->curr->s;
   }

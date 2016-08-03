@@ -22,20 +22,21 @@ int main(int argc, char **argv){
   login = malloc(sizeof(char) * ARG_BUF);
   host = malloc(sizeof(char) * ARG_BUF);
 
+  set_input_mode();
 
   //get path
   if((path = getcwd(NULL, 0)) == NULL){//getcwd allocate dynamically the path
     perror("getcwd() error");
     return 1;
   }
-  printf("path : %s\n", path);//this before reformat fail, why ?
+  //printf("path : %s\n", path);
 
   //get login
   if((login = getpwuid(getuid())->pw_name) == NULL){
     fprintf(stderr, "error, can't find login\n");
     return 1;
   }
-  printf("initial login : %s\n", login);
+  //printf("initial login : %s\n", login);
 
   //get hostname
   if(gethostname(host, ARG_BUF) == -1){
@@ -59,8 +60,9 @@ void sh_loop(void){
   char *line;
   char **args;
   int cont;//if exit, close the shell
-  do{
+  do {
     fprintf(stdout, "%s%s%s@%s%s%s:%s%s\n->", MAG, login, NRM, BLU, host, RED, path, NRM);
+    fflush(stdout);
     line = read_line();
     //printf("line : %s\n", line);
     args = read_args(line);
@@ -75,16 +77,19 @@ void sh_loop(void){
 }
 
 char *read_line(){//don't forget to handle erasures
-  int c;
   char *line = malloc(sizeof(char) * BUFFER_SIZE);//line = cursor ?
   if(!line){
     fprintf(stderr, "cannot allocate memory");
   }
   char *orig = line;
+  if(get_cmd(line) == NULL){
+    return NULL;
+  }
 
-  while((c = getchar()) != '\n'){
+  /*while((c = getchar()) != '\n'){
     *line++ = c;
 
+    //for this use getch and ungetch
     if(c == '\033'){//escape value
       getchar();//skip [
 
@@ -103,7 +108,7 @@ char *read_line(){//don't forget to handle erasures
     //printf("added : %c\n", c);
   }
   *line = '\0';
-  //printf("orig :%s\n", orig);
+  //printf("orig :%s\n", orig);*/
   add_command(orig);
 
   return orig;

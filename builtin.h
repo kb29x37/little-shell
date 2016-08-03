@@ -1,16 +1,28 @@
+#ifndef builtin_h
+#define builtin_h
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <termios.h>
+#include <ctype.h>
 
 int sh_help(char **);
 int sh_exit(char **);
 int sh_cd(char **);
 int nb_built_in(void);
-void reformat_path(void);//change header name?
+void reformat_path(void);
 char getch(void);
 void ungetch(void);
+
+//display functions
+
+void reset_input_mode(void);
+void set_input_mode(void);
+char *get_cmd(char *line);//keep the line pointer ?
 
 
 #define HOME "home"
@@ -35,3 +47,5 @@ char *path;
 char *login;
 char *host;
 char *buffer;
+
+#endif
