@@ -5,6 +5,7 @@ struct termios old, new;
 
 void update_line_all(char*, char*, int*);
 void update_line_c(char*, int, char);
+void remove_c(char*, int, char);
 
 void reset_input_mode (void) {
   //tcsetattr set the given attr to the terminal
@@ -94,6 +95,7 @@ char* get_cmd(char *line) {
   return orig;
 }
 
+//print the *line instead of the previous command seen on the screen
 void update_line_all(char *orig, char *line, int *counter){
   orig = line;
   for(int i = 0; i < *counter; ++i){//erasing the previous line
@@ -105,6 +107,7 @@ void update_line_all(char *orig, char *line, int *counter){
   *counter = strlen(line);
 }
 
+//add one char to the position given
 void update_line_c(char *orig, int position, char c){
   char *tmp = orig;
   int length = strlen(orig);
@@ -113,4 +116,9 @@ void update_line_c(char *orig, int position, char c){
   for(int i = position; i <= length; ++i){
     orig[i+1] = tmp[i];
   }
+}
+
+//remove the char at position given
+void remove_c(char* orig, int position, char c){
+  //TODO
 }

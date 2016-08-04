@@ -69,7 +69,7 @@ char *get_next(list_data *l){
   }
   //printf("dir %d\t", *dir);
   if(l->curr == NULL){
-    //printf("goes to head\n");
+    //printf("curr null\n");
     if(l->size == 1){
       l->curr = l->head;
     } else {
@@ -83,7 +83,10 @@ char *get_next(list_data *l){
   if(*dir == NEXT || *dir == 0){//same direction as before
     l->curr = l->curr->next;
   } else {
-    l->curr = (l->curr->next == NULL) ? l->head : l->curr->next->next;
+    if(l->curr->next != NULL){
+      //printf("that's normal : %s\n", l->curr->next->s);
+    }
+    l->curr = (l->curr->next->next == NULL) ? l->head : l->curr->next->next;
     to_return = l->curr->s;
   }
 
@@ -98,7 +101,7 @@ char *get_previous(list_data *l){
   }
   //printf("dir %d\t", *dir);
   if(l->curr == NULL){
-    //printf("goes to last\n");
+    //printf("curr null\n");
     if(l->size == 1){
       l->curr = l->head;
     } else {
@@ -113,7 +116,7 @@ char *get_previous(list_data *l){
     l->curr = l->curr->prev;
   } else {
     //printf("diff dir\n");
-    l->curr = (l->curr->prev == NULL) ? l->last : l->curr->prev->prev;
+    l->curr = (l->curr->prev->prev == NULL) ? l->last : l->curr->prev->prev;
     to_return = l->curr->s;
   }
 
