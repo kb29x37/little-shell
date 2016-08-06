@@ -76,9 +76,11 @@ char *read_line(){
     fprintf(stderr, "cannot allocate memory");
   }
   char *orig = line;
-  if(get_cmd(line) == NULL){
+  if((line = get_cmd(line)) == NULL){//line = not keep probably
     return NULL;
   }
+  orig = line;
+  printf("other line : %s\n", orig);
 
   /*while((c = getchar()) != '\n'){
     *line++ = c;
@@ -100,9 +102,8 @@ char *read_line(){
     }
 
     //printf("added : %c\n", c);
-  }
-  *line = '\0';
-  //printf("orig :%s\n", orig);*/
+    }*/
+  //printf("orig :%s\n", orig);
   add_command(orig);
 
   return orig;

@@ -3,7 +3,7 @@
 
 struct termios old, new;
 
-void update_line_all(char*, char*, int*);
+void update_line_all(char**, char*, int*);
 void update_line_c(char*, int, char);
 void remove_c(char*, int, char);
 
@@ -50,7 +50,10 @@ void set_input_mode (void) {
 
 char* get_cmd(char *line) {
   char c = '\0'; /* to store char readed */
-  int counter = 0;
+  int counter, position;
+  counter = position = 0;
+  //counter is the number of char in the line
+  //position is the position in the line of the cursor
   char *orig = line;
 
   while (c != '\n') {
@@ -70,9 +73,16 @@ char* get_cmd(char *line) {
 
       //update the line in the same time
       if(c == 'A'){//UP
-        update_line_all(orig, get_previous_cmd(), &counter);
+        update_line_all(&orig, get_previous_cmd(), &counter);
+        position = counter;
+        line = orig;//see how not to break the reference here
+        printf("orig : %s\n", line);
+        line += position;
       } else if(c == 'B'){//DOWN
-        update_line_all(orig, get_next_cmd(), &counter);
+        update_line_all(&orig, get_next_cmd(), &counter);
+        position = counter;
+        line = orig;
+        //line += position;
       } else if(c == 'C'){//RIGHT
         printf("\033[1C");
       } else if(c == 'D'){//LEFT
@@ -82,7 +92,7 @@ char* get_cmd(char *line) {
 
     } else if (c == '\r'){
       c = '\n';
-      printf("\n");
+      //printf("\n");
     } else if (c != 0x7f){//might check for non supported characters ?
       *line++ = c;
       printf("%c", c);
@@ -90,21 +100,22 @@ char* get_cmd(char *line) {
     }
     fflush(stdout);
   }
-  *line = '\0';
-  //printf("orig : %s\n", line);
+
+  *line = '\0';//problem here too ?
+  printf("line : %s\n", line);
   return orig;
 }
 
 //print the *line instead of the previous command seen on the screen
-void update_line_all(char *orig, char *line, int *counter){
-  orig = line;
+void update_line_all(char **orig, char *line, int *counter){
   for(int i = 0; i < *counter; ++i){//erasing the previous line
     printf("\b");
     printf(" ");
     printf("\b");
   }
-  printf("%s", orig);//printing the new line
   *counter = strlen(line);
+  *orig = line;
+  printf("%s", *orig);//printing the new line
 }
 
 //add one char to the position given

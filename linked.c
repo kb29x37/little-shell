@@ -69,9 +69,10 @@ char *get_next(list_data *l){
   }
   //printf("dir %d\t", *dir);
   if(l->curr == NULL){
-    //printf("curr null\n");
+    printf("curr null\n");
     if(l->size == 1){
       l->curr = l->head;
+      return l->curr->s;
     } else {
       l->curr = (*dir == NEXT) ? l->head : l->last->next;
       *dir = NEXT;
@@ -101,9 +102,10 @@ char *get_previous(list_data *l){
   }
   //printf("dir %d\t", *dir);
   if(l->curr == NULL){
-    //printf("curr null\n");
+    printf("curr null\n");
     if(l->size == 1){
       l->curr = l->head;
+      return l->curr->s;
     } else {
       l->curr = (*dir == PREV) ? l->last : l->head->prev;
       *dir = PREV;

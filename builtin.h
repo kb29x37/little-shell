@@ -22,7 +22,7 @@ void ungetch(void);
 
 void reset_input_mode(void);
 void set_input_mode(void);
-char *get_cmd(char *line);//keep the line pointer ?
+char *get_cmd(char *);
 
 
 #define HOME "home"
