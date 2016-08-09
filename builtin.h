@@ -38,9 +38,10 @@ char *get_cmd(char *);
 #define CYN  "\x1B[36m"
 #define WHT  "\x1B[37m"
 
-//define extra keys
+//define constants
 #define UP "^[[A"
 #define DOWN "^[[B"
+#define TAB 4
 
 //global variables
 char *path;

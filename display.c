@@ -14,17 +14,17 @@ void reset_input_mode (void) {
 
 void set_input_mode (void) {
 
-  /* Make sure stdin is a terminal. */
+  // Make sure stdin is a terminal.
   if (!isatty (STDIN_FILENO)) {
       fprintf (stderr, "Not a terminal.\n");
       exit (EXIT_FAILURE);
     }
 
-  /* Save the terminal attributes so we can restore them later. */
+  // Save the terminal attributes so we can restore them later.
   tcgetattr (STDIN_FILENO, &old);
   atexit (reset_input_mode);
 
-  /* Set the funny terminal modes. */
+  // Set the funny terminal modes.
   tcgetattr (STDIN_FILENO, &new);
 
   /*new.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP
@@ -34,13 +34,13 @@ void set_input_mode (void) {
   new.c_cflag &= ~(CSIZE|PARENB);
   new.c_cflag |= CS8;*/
 
-  new.c_lflag &= ~(ICANON|ECHO); /* clear ICANON */
+  new.c_lflag &= ~(ICANON|ECHO); //clear ICANON
   new.c_cflag = CS8 | CLOCAL | CREAD | ICRNL;
   new.c_iflag = IGNPAR;
-  new.c_cc[VMIN] = 1;/* minumum character readed = 1 */
-  new.c_cc[VTIME] = 0;/* timeout for reading */
+  new.c_cc[VMIN] = 1;// minumum character readed = 1
+  new.c_cc[VTIME] = 0;// timeout for reading
 
-  /* read with no timeout byte by byte (one char at a time at the time it's avaible) */
+  // read with no timeout byte by byte (one char at a time at the time it's avaible)
 
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &new);
 }
@@ -61,34 +61,47 @@ char* get_cmd(char *line) {
     read(STDIN_FILENO, &c, 1);//change read ?
 
     if (c == 0x7f && counter > 0) { //backspace
-      *(--line) = ' ';//update the command
+      if(*line == '\t'){//TAB
+        for(int i = 0; i < TAB; ++i){
+          printf("\b");
+          printf(" ");
+          printf("\b");
+        }
+      } else {
       printf("\b");//update the screen
       printf(" ");
       printf("\b");
+      }
+      *(--line) = ' ';//update the command
       counter--;
+      position--;
+
     } else if (c == '\033') { //escape character
       read(STDIN_FILENO, &c, 1);//skip [
-
       read(STDIN_FILENO, &c, 1);
 
       //update the line in the same time
       if(c == 'A'){//UP
         update_line_all(&orig, get_previous_cmd(), &counter);//to put in a function
         position = counter;
-        //line = orig;//not break the reference here
         line += position;
-        //printf("line : %s", orig);
+
       } else if(c == 'B'){//DOWN
         update_line_all(&orig, get_next_cmd(), &counter);
         position = counter;
-        //line = orig;
         line += position;
 
       } else if(c == 'C'){//RIGHT
-        printf("\033[1C");
+        if(position < counter){
+          printf("\033[1C");
+          position++;
+        }
 
       } else if(c == 'D'){//LEFT
-        printf("\033[1D");
+        if(position > 0 ){
+          printf("\033[1D");
+          position--;
+        }
       }
       //return NULL;
 
@@ -96,14 +109,16 @@ char* get_cmd(char *line) {
       c = '\n';
       //printf("\n");
     } else if (c != 0x7f){//might check for non supported characters ?
+      //update_line_c(orig, position, c);
       *line++ = c;
       printf("%c", c);
       counter++;
+      position++;
     }
     fflush(stdout);
   }
 
-  *line = '\0';//problem here too ?
+  *line = '\0';
   //printf("line : %s\n", orig);
   return orig;
 }
@@ -117,22 +132,23 @@ void update_line_all(char **orig, char *line, int *counter){
   }
   char *orig_d = *orig;
   *counter = strlen(line);
-  while((*orig_d++ = *line++) != '\0')
+  while((*orig_d++ = *line++) != '\0')//updating the line
     ;
-  //*orig-= (*counter+1);
-  //*orig = line;
   printf("%s", *orig);//printing the new line
 }
 
 //add one char to the position given
 void update_line_c(char *orig, int position, char c){
-  char *tmp = orig;
   int length = strlen(orig);
-
+  char tmp[length];
+  printf("orig : %s and %c\n", orig, c);
+  strcpy(tmp, orig);//check if same reference
+  printf("length %d and %s\n", length, orig);
   orig[position] = c;
   for(int i = position; i <= length; ++i){
     orig[i+1] = tmp[i];
   }
+  printf("orig in update : %s, %d\n", orig, position);
 }
 
 //remove the char at position given
