@@ -51,7 +51,7 @@ int main(int argc, char **argv){
   clean();//free the linked list segfault with 1 in the linked list
   free(host);
   free(path);
-  free(login);
+  //free(login);
   return EXIT_SUCCESS;
 }
 
@@ -168,6 +168,7 @@ int launch(char **args){
     //= 0 <=> child process
     if(execvp(args[0], args) == -1){
       perror("shell spawn error");
+      free(args);
       return sh_exit(args);//exiting child process in case of error
     }
   } else if (pid == -1) {

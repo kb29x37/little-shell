@@ -105,7 +105,7 @@ char* get_cmd(char *line) {
       }
       //return NULL;
 
-    } else if (c == '\r'){
+    } else if (c == '\r' || c == '\n'){
       c = '\n';
       //printf("\n");
     } else if (c != 0x7f){//might check for non supported characters ?
