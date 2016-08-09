@@ -71,16 +71,14 @@ void sh_loop(void){
 }
 
 char *read_line(){
-  char *line = malloc(sizeof(char) * BUFFER_SIZE);
+  char *line = calloc(BUFFER_SIZE, sizeof(char));
   if(!line){
     fprintf(stderr, "cannot allocate memory");
   }
-  char *orig = line;
+  //  char *orig = line;
   if((line = get_cmd(line)) == NULL){//line = not keep probably
     return NULL;
   }
-  orig = line;
-  printf("other line : %s\n", orig);
 
   /*while((c = getchar()) != '\n'){
     *line++ = c;
@@ -104,9 +102,9 @@ char *read_line(){
     //printf("added : %c\n", c);
     }*/
   //printf("orig :%s\n", orig);
-  add_command(orig);
+  add_command(line);
 
-  return orig;
+  return line;
 }
 
 //parse the given line into a string of separate words

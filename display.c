@@ -73,18 +73,20 @@ char* get_cmd(char *line) {
 
       //update the line in the same time
       if(c == 'A'){//UP
-        update_line_all(&orig, get_previous_cmd(), &counter);
+        update_line_all(&orig, get_previous_cmd(), &counter);//to put in a function
         position = counter;
-        line = orig;//see how not to break the reference here
-        printf("orig : %s\n", line);
+        //line = orig;//not break the reference here
         line += position;
+        //printf("line : %s", orig);
       } else if(c == 'B'){//DOWN
         update_line_all(&orig, get_next_cmd(), &counter);
         position = counter;
-        line = orig;
-        //line += position;
+        //line = orig;
+        line += position;
+
       } else if(c == 'C'){//RIGHT
         printf("\033[1C");
+
       } else if(c == 'D'){//LEFT
         printf("\033[1D");
       }
@@ -102,7 +104,7 @@ char* get_cmd(char *line) {
   }
 
   *line = '\0';//problem here too ?
-  printf("line : %s\n", line);
+  //printf("line : %s\n", orig);
   return orig;
 }
 
@@ -113,8 +115,12 @@ void update_line_all(char **orig, char *line, int *counter){
     printf(" ");
     printf("\b");
   }
+  char *orig_d = *orig;
   *counter = strlen(line);
-  *orig = line;
+  while((*orig_d++ = *line++) != '\0')
+    ;
+  //*orig-= (*counter+1);
+  //*orig = line;
   printf("%s", *orig);//printing the new line
 }
 
