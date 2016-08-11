@@ -58,7 +58,6 @@ char* get_cmd(char *line) {
   int typed = -1;
 
   while (c != '\n') {
-    printf("in the loop\n");
     read(STDIN_FILENO, &c, 1);//change read ?
 
     if (c == 0x7f && counter > 0) { //backspace
