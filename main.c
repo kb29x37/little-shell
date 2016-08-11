@@ -162,13 +162,15 @@ int execute(char **args){
 int launch(char **args){
   printf("launch\n");
   pid_t pid, wpid;
-  int status;
+  int status, fail;
 
+  fail = 0;
   if((pid = fork()) == 0){
     //= 0 <=> child process
     if(execvp(args[0], args) == -1){
       perror("shell spawn error");
       free(args);
+      fail = 1;
       return sh_exit(args);//exiting child process in case of error
     }
   } else if (pid == -1) {
@@ -178,7 +180,10 @@ int launch(char **args){
     if((wpid = waitpid(pid, &status, WUNTRACED)) == -1){//Wuntraced return if child has stoped
       perror("shell");//status ?
     }
-    set_input_mode();//put back the right input mode deleted in the child
+    if(fail == 1){
+      set_input_mode();
+    }
+    //put back the right input mode deleted in the child
     //might find some better way to do this
   }
   free(args);
