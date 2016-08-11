@@ -54,8 +54,6 @@ void put(list_data *l, char *s){
   }
 }
 
-//sometimes curr goes to NULL -> get rid of this
-
 //if curr goes to null send it back the value of the head or of the last
 //if any change in direction, tail twice the position in the linked list
 //don't care of null because of head and last (see with direction)
@@ -72,7 +70,7 @@ char *get_next(list_data *l){
     printf("curr null\n");
     if(l->size == 1){
       l->curr = l->head;
-      return l->curr->s;
+      return "";
     } else {
       l->curr = (*dir == NEXT) ? l->head : l->last->next;
       *dir = NEXT;
@@ -86,6 +84,8 @@ char *get_next(list_data *l){
       return "";
     }
     l->curr = l->curr->next;
+  } else if(l->size == 1){
+    return "";
   } else {
     /*if(l->curr->next != NULL){
       //printf("that's normal : %s\n", l->curr->next->s);
@@ -117,8 +117,11 @@ char *get_previous(list_data *l){
 
   char *to_return = l->curr->s;
 
-  if(*dir == PREV || *dir == 0){
+  if(*dir == PREV || *dir == 0) {
     l->curr = l->curr->prev;
+  } else if(l->size == 1) {
+    l->curr = l->head;
+    return l->head->s;
   } else {
     //printf("diff dir\n");
     l->curr = (l->curr->prev->prev == NULL) ? l->last : l->curr->prev->prev;
