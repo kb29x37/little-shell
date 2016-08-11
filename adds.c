@@ -11,7 +11,7 @@ void add_command(char *a){
   printf("succeded to put in the structure\n");
 }
 
-char *get_next_cmd(){//getch and ungetch necessary ?
+char *get_next_cmd(){
   return !l ? "" : get_next(l);
 }
 

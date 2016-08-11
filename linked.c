@@ -82,11 +82,14 @@ char *get_next(list_data *l){
   char *to_return = l->curr->s;
 
   if(*dir == NEXT || *dir == 0){//same direction as before
+    if(l->size == 1){
+      return "";
+    }
     l->curr = l->curr->next;
   } else {
-    if(l->curr->next != NULL){
+    /*if(l->curr->next != NULL){
       //printf("that's normal : %s\n", l->curr->next->s);
-    }
+    }*/
     l->curr = (l->curr->next->next == NULL) ? l->head : l->curr->next->next;
     to_return = l->curr->s;
   }

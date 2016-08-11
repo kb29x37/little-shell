@@ -174,10 +174,12 @@ int launch(char **args){
   } else if (pid == -1) {
     fprintf(stderr, "cannot create child process");
   } else {
-    //pid = child pid
+    //pid = child pid in the parent
     if((wpid = waitpid(pid, &status, WUNTRACED)) == -1){//Wuntraced return if child has stoped
       perror("shell");//status ?
     }
+    set_input_mode();//put back the right input mode deleted in the child
+    //might find some better way to do this
   }
   free(args);
   return 1;

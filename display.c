@@ -55,6 +55,7 @@ char* get_cmd(char *line) {
   //counter is the number of char in the line
   //position is the position in the line of the cursor
   char *orig = line;
+  int typed = -1;
 
   while (c != '\n') {
 
@@ -75,6 +76,8 @@ char* get_cmd(char *line) {
       *(--line) = ' ';//update the command
       counter--;
       position--;
+      typed = 1;
+      printf("orig when erase : %s\n", orig);
 
     } else if (c == '\033') { //escape character
       read(STDIN_FILENO, &c, 1);//skip [
@@ -82,14 +85,18 @@ char* get_cmd(char *line) {
 
       //update the line in the same time
       if(c == 'A'){//UP
-        update_line_all(&orig, get_previous_cmd(), &counter);//to put in a function
-        position = counter;
-        line += position;
+        if(typed == -1){
+          update_line_all(&orig, get_previous_cmd(), &counter);
+          position = counter;
+          line += position;
+        }
 
       } else if(c == 'B'){//DOWN
-        update_line_all(&orig, get_next_cmd(), &counter);
-        position = counter;
-        line += position;
+        if(typed == -1){
+          update_line_all(&orig, get_next_cmd(), &counter);
+          position = counter;
+          line += position;
+        }
 
       } else if(c == 'C'){//RIGHT
         if(position < counter){
@@ -114,6 +121,7 @@ char* get_cmd(char *line) {
       printf("%c", c);
       counter++;
       position++;
+      typed = 1;
     }
     fflush(stdout);
   }
