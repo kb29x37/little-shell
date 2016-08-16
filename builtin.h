@@ -41,7 +41,9 @@ char *get_cmd(char *);
 //define constants
 #define UP "^[[A"
 #define DOWN "^[[B"
-#define TAB 4
+#define TAB 6
+#define TYPED 1
+#define N_TYPED -1
 
 //global variables
 char *path;

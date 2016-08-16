@@ -49,19 +49,19 @@ void set_input_mode (void) {
 //find a way to put the read in some if
 
 char* get_cmd(char *line) {
-  char c = '\0'; /* to store char readed */
+  char c = '\0'; // to store char readed
   int counter, position;
   counter = position = 0;
   //counter is the number of char in the line
   //position is the position in the line of the cursor
   char *orig = line;
-  int typed = -1;
+  int typed = N_TYPED;
 
   while (c != '\n') {
     read(STDIN_FILENO, &c, 1);//change read ?
 
-    if (c == 0x7f && counter > 0) { //backspace
-      if(*line == '\t'){//TAB
+    if (c == 0x7f && counter > 0 && position > 0) { //backspace
+      if(*(line-1) == '\t'){//TAB
         for(int i = 0; i < TAB; ++i){
           printf("\b");
           printf(" ");
@@ -75,7 +75,7 @@ char* get_cmd(char *line) {
       *(--line) = ' ';//update the command
       counter--;
       position--;
-      typed = 1;
+      typed = (position == 0) ? N_TYPED : TYPED;
       printf("orig when erase : %s\n", orig);
 
     } else if (c == '\033') { //escape character
@@ -84,14 +84,14 @@ char* get_cmd(char *line) {
 
       //update the line in the same time
       if(c == 'A'){//UP
-        if(typed == -1){
+        if(typed == N_TYPED){
           update_line_all(&orig, get_previous_cmd(), &counter);
           position = counter;
           line += position;
         }
 
       } else if(c == 'B'){//DOWN
-        if(typed == -1){
+        if(typed == N_TYPED){
           update_line_all(&orig, get_next_cmd(), &counter);
           position = counter;
           line += position;
@@ -104,7 +104,7 @@ char* get_cmd(char *line) {
         }
 
       } else if(c == 'D'){//LEFT
-        if(position > 0 ){
+        if(position > 0){
           printf("\033[1D");
           position--;
         }
@@ -120,7 +120,7 @@ char* get_cmd(char *line) {
       printf("%c", c);
       counter++;
       position++;
-      typed = 1;
+      typed = TYPED;
     }
     fflush(stdout);
   }
