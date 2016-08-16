@@ -71,8 +71,10 @@ char *get_next(list_data *l){
     if(l->size == 1){
       l->curr = l->head;
       return "";
+    } else if(*dir == NEXT) {
+      return "";
     } else {
-      l->curr = (*dir == NEXT) ? l->head : l->last->next;
+      l->curr = l->last->next;
       *dir = NEXT;
     }
   }
@@ -110,7 +112,7 @@ char *get_previous(list_data *l){
       l->curr = l->head;
       return l->curr->s;
     } else {
-      l->curr = (*dir == PREV) ? l->last : l->head->prev;
+      l->curr = (*dir == PREV) ? l->last : l->head;
       *dir = PREV;
     }
   }
