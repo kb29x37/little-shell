@@ -76,7 +76,7 @@ char* get_cmd(char *line) {
       counter--;
       position--;
       typed = (position == 0) ? N_TYPED : TYPED;
-      printf("orig when erase : %s\n", orig);
+      //printf("orig when erase : %s\n", orig);
 
     } else if (c == '\033') { //escape character
       read(STDIN_FILENO, &c, 1);//skip [
@@ -85,13 +85,16 @@ char* get_cmd(char *line) {
       //update the line in the same time
       if(c == 'A'){//UP
         if(typed == N_TYPED){
+          line -= position;
           update_line_all(&orig, get_previous_cmd(), &counter);
           position = counter;
+          //printf("line : %s\n", line);
           line += position;
         }
 
       } else if(c == 'B'){//DOWN
         if(typed == N_TYPED){
+          line -= position;
           update_line_all(&orig, get_next_cmd(), &counter);
           position = counter;
           line += position;
