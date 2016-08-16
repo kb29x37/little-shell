@@ -1,6 +1,7 @@
 #include "builtin.h"
+#include "adds.h"
 
-char *built_in[] = {"help", "exit", "cd"};
+char *built_in[] = {"help", "exit", "cd", "history"};
 
 int nb_built_in(void){
   return sizeof(built_in)/sizeof(char*);
@@ -66,4 +67,9 @@ int sh_help(char **args){
 
 int sh_exit(char **args){
   return 0;
+}
+
+int sh_history(char **args){
+  print_hist();
+  return 1;
 }

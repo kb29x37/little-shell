@@ -1,7 +1,6 @@
 #ifndef builtin_h
 #define builtin_h
 
-
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -13,6 +12,7 @@
 int sh_help(char **);
 int sh_exit(char **);
 int sh_cd(char **);
+int sh_history(char **);
 int nb_built_in(void);
 void reformat_path(void);
 char getch(void);

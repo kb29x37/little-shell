@@ -135,7 +135,8 @@ char *get_previous(list_data *l){
 }
 
 void print_list(list_data *l){
+  int i = l->size+1;
   foreach(node, l){
-    printf("%s\n", node->s);
+    printf("%d : %s\n", --i, node->s);
   }
 }

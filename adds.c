@@ -24,3 +24,7 @@ void clean(){
     destroy(l);
   }
 }
+
+void print_hist(){
+  print_list(l);
+}

@@ -13,7 +13,8 @@ int execute(char **args);
 int (*builtin_func[]) (char **) = {
   &sh_help,
   &sh_exit,
-  &sh_cd
+  &sh_cd,
+  &sh_history
 };
 
 
@@ -153,6 +154,7 @@ int execute(char **args){
 
   for(int i = 0; i < nb_built_in(); ++i){
     if(strcmp(args[0], built_in[i]) == 0){
+      printf("found ! \n");
       return (*builtin_func[i])(args);
     }
   }

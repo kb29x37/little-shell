@@ -42,6 +42,7 @@ void add_command(char *);
 char *get_next_cmd(void);
 char *get_previous_cmd(void);
 void clean(void);
+void print_hist(void);
 
 //useful maccro
 
