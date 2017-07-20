@@ -49,6 +49,6 @@ char *get_cmd(char *);
 char *path;
 char *login;
 char *host;
-char *buffer;
+char *buffer;//what is that?
 
 #endif

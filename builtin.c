@@ -66,10 +66,12 @@ int sh_help(char **args){
 }
 
 int sh_exit(char **args){
+  (void) args;
   return 0;
 }
 
 int sh_history(char **args){
+  (void) args;
   print_hist();
   return 1;
 }

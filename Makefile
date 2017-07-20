@@ -1,5 +1,5 @@
 EXEC=shell
-CFLAGS	+=	-I  -pedantic -Wall
+CFLAGS	+=	-I  -pedantic -Wall -g
 RM = rm -f
 SRC = adds.c \
 			builtin.c \

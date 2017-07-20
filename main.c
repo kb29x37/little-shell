@@ -8,7 +8,7 @@ char *read_line(void);
 char **read_args(char *line);
 int launch(char **args);
 int execute(char **args);
-//void reformat_path();//put in builtin.h but rename the file
+void free_all();
 
 int (*builtin_func[]) (char **) = {
   &sh_help,
@@ -17,42 +17,50 @@ int (*builtin_func[]) (char **) = {
   &sh_history
 };
 
+void free_all() {
+  free(login);
+  login = NULL;
+  free(host);
+  host = NULL;
+  free(path);
+  path = NULL;
+}
 
 int main(int argc, char **argv){
-  //add configuration files
-  login = malloc(sizeof(char) * ARG_BUF);
-  host = malloc(sizeof(char) * ARG_BUF);
+  size_t size = sizeof(char) * ARG_BUF;
+
+  login = calloc(1, size);//memeset in the same time
+  host = calloc(1, size);
+  path = calloc(1, size);
 
   set_input_mode();
 
   //get path
-  if((path = getcwd(NULL, 0)) == NULL){//getcwd allocate dynamically the path
+  if((path = getcwd(path, size)) == NULL){ 
     perror("getcwd() error");
+    free_all();
     return 1;
   }
-  //printf("path : %s\n", path);
 
   //get login
   if((login = getpwuid(getuid())->pw_name) == NULL){
     fprintf(stderr, "error, can't find login\n");
+    free_all();
     return 1;
   }
-  //printf("initial login : %s\n", login);
 
   //get hostname
   if(gethostname(host, ARG_BUF) == -1){
     fprintf(stderr, "error, can't find hostname\n");
+    free_all();
     return 1;
   }
 
   reformat_path();
   sh_loop();
-  printf("out of the loop\n");
 
   clean();//free the linked list segfault with 1 in the linked list
-  free(host);
-  free(path);
-  //free(login);
+  free_all();
   return EXIT_SUCCESS;
 }
 
@@ -64,45 +72,24 @@ void sh_loop(void){
   do {
     fprintf(stdout, "%s%s%s@%s%s%s:%s%s\n->", MAG, login, NRM, BLU, host, RED, path, NRM);
     fflush(stdout);
-    line = read_line();
+    line = read_line();//pass a buffer alocated in sh_loop here
     args = read_args(line);
-
     cont = execute(args);
+    free(args);
   }while(cont);
 }
 
 char *read_line(){
-  char *line = calloc(BUFFER_SIZE, sizeof(char));
+  char *line = calloc(1, BUFFER_SIZE * sizeof(char));//maybe use an array here
   if(!line){
     fprintf(stderr, "cannot allocate memory");
   }
   //  char *orig = line;
-  if((line = get_cmd(line)) == NULL){//line = not keep probably
+  if((get_cmd(line)) == NULL){//line = not keep probably
+    free(line);
     return NULL;
   }
 
-  /*while((c = getchar()) != '\n'){
-    *line++ = c;
-
-    //for this use getch and ungetch
-    if(c == '\033'){//escape value
-      getchar();//skip [
-
-      if((c = getchar()) == 'A'){
-        printf("%s\n", get_previous_cmd());
-
-      } else if(c == 'B'){
-        printf("%s\n",  get_next_cmd());
-      }
-      if((c = getchar()) != '\n'){//get rid of the last \n if present
-        //TODO
-      }
-      return NULL;
-    }
-
-    //printf("added : %c\n", c);
-    }*/
-  //printf("orig :%s\n", orig);
   add_command(line);
 
   return line;
@@ -117,9 +104,9 @@ char **read_args(char *line){//rename to parse
     return NULL;
   }
 
-  char **args = calloc(ARG_BUF, sizeof(char)*32);//table where to store the parsed version
+  char **args = calloc(ARG_BUF, sizeof(char*));//table where to store the parsed version
   char **arg_orig = args;//pointer to the beginning of thez array
-  char *readed = malloc(sizeof(char) * BUFFER_SIZE);//temporary store all words readed
+  char *readed = line;
 
   if(!readed || !args){
     fprintf(stderr, "cannot allocate memeory");
@@ -162,16 +149,16 @@ int execute(char **args){
 }
 
 int launch(char **args){
-  printf("launch\n");
   pid_t pid, wpid;
   int status, fail;
 
   fail = 0;
-  if((pid = fork()) == 0){
+  if((pid = fork()) == 0) {
     //= 0 <=> child process
-    if(execvp(args[0], args) == -1){
+    if(execvp(args[0], args) == -1) {
       perror("shell spawn error");
       free(args);
+      args = NULL;
       fail = 1;
       return sh_exit(args);//exiting child process in case of error
     }
@@ -179,16 +166,18 @@ int launch(char **args){
     fprintf(stderr, "cannot create child process");
   } else {
     //pid = child pid in the parent
-    if((wpid = waitpid(pid, &status, WUNTRACED)) == -1){//Wuntraced return if child has stoped
-      perror("shell");//status ?
+    if((wpid = waitpid(pid, &status, WUNTRACED)) == -1) {//Wuntraced return if child has stoped
+      perror("shell");
     }
-    if(fail == 1){
+    if(fail == 1) {
       set_input_mode();
     }
     //put back the right input mode deleted in the child
     //might find some better way to do this
   }
-  free(args);
+
+  //free(args);
+
   return 1;
 }
 
@@ -212,7 +201,7 @@ void reformat_path(){
   }
 
   int position = 0;
-  char *new_path = calloc(1, 2048);//change the 2048, temporary
+  char *new_path = calloc(1, ARG_BUF * sizeof(char));//!!!!!
   char *orig = new_path;
   int home = 0;
   int last = 1;
@@ -239,10 +228,8 @@ void reformat_path(){
         if(last == 0){
           *new_path++ = '/';
         }
-        printf("here %s\n", login);
 
       } else if (home == 1) {
-        //printf("here = 1 : %s, %s and %d\n", login, buf, strcmp(login, buf));
         home = 0;
         *new_path++ = '/';
         for(int i = 0; i < 4; ++i){
@@ -252,10 +239,8 @@ void reformat_path(){
         for(int i = 0; i < position; ++i){
           *new_path++ = buf[i];
         }
-        //printf("here end 1\n");
 
       } else  {
-        //printf("here updtate\n");
         if(position > 0) {
           *new_path++ = '/';
         }
@@ -264,25 +249,24 @@ void reformat_path(){
         }
       }
 
-      for(int i = 0; i < position+1; ++i){//buffer reset
+      for(int i = 0; i < position+1; ++i){//use memset
         buf[i] = '\0';
       }
       position = 0;
-      //printf("buf after clear %s\n", buf);
     } else {
       buf[position] = *curr;
       ++position;
-      //printf("here end %c\n", *curr);
-      //printf("buf : %s\n", buf);
+
       }
     ++curr;
   }
   *new_path = '\0';
+
   if(strcmp("\0", orig) == 0){
     *new_path++ = '/';
     *new_path = '\0';
   }
-  free(old);//free the old path
+
   path = orig;
-  //printf("path after formating : %s\n", path);
+  free(old);//free the old path
 }
