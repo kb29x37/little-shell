@@ -36,12 +36,15 @@ int main(int argc, char **argv){
   set_input_mode();
 
   //get path
-  if((path = getcwd(path, size)) == NULL){ 
+  char buf[ARG_BUF];
+
+  if((getcwd(buf, ARG_BUF * sizeof(char))) == NULL){//sizeof?
     perror("getcwd() error");
     free_all();
     return 1;
   }
 
+  strcpy(path, buf);
   //get login
   if((login = getpwuid(getuid())->pw_name) == NULL){
     fprintf(stderr, "error, can't find login\n");
@@ -61,6 +64,7 @@ int main(int argc, char **argv){
 
   clean();//free the linked list segfault with 1 in the linked list
   free_all();
+
   return EXIT_SUCCESS;
 }
 
@@ -157,7 +161,7 @@ int launch(char **args){
     //= 0 <=> child process
     if(execvp(args[0], args) == -1) {
       perror("shell spawn error");
-      free(args);
+      //free(args);
       args = NULL;
       fail = 1;
       return sh_exit(args);//exiting child process in case of error
@@ -169,9 +173,9 @@ int launch(char **args){
     if((wpid = waitpid(pid, &status, WUNTRACED)) == -1) {//Wuntraced return if child has stoped
       perror("shell");
     }
-    if(fail == 1) {
+    //if(fail == 1) {
       set_input_mode();
-    }
+      //}
     //put back the right input mode deleted in the child
     //might find some better way to do this
   }
@@ -196,13 +200,11 @@ void reformat_path(){
   char buf[64];
 
   //initialize the buffer to an empty one
-  for(int i = 0; i < 64; ++i){
-    buf[i] = '\0';
-  }
+  memset(buf, 0, 64 * sizeof(char));
 
   int position = 0;
-  char *new_path = calloc(1, ARG_BUF * sizeof(char));//!!!!!
-  char *orig = new_path;
+  char* new_path = path;
+  char* orig = new_path;
   int home = 0;
   int last = 1;
 
@@ -266,7 +268,8 @@ void reformat_path(){
     *new_path++ = '/';
     *new_path = '\0';
   }
-
+  //curr = NULL;
+  //free(path);
+  //path = NULL;
   path = orig;
-  free(old);//free the old path
 }

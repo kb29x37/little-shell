@@ -9,10 +9,10 @@
 #include <termios.h>
 #include <ctype.h>
 
-int sh_help(char **);
-int sh_exit(char **);
-int sh_cd(char **);
-int sh_history(char **);
+int sh_help(char**);
+int sh_exit(char**);
+int sh_cd(char**);
+int sh_history(char**);
 int nb_built_in(void);
 void reformat_path(void);
 char getch(void);
@@ -22,7 +22,7 @@ void ungetch(void);
 
 void reset_input_mode(void);
 void set_input_mode(void);
-char *get_cmd(char *);
+char *get_cmd(char*);
 
 
 #define HOME "home"
@@ -49,6 +49,6 @@ char *get_cmd(char *);
 char *path;
 char *login;
 char *host;
-char *buffer;//what is that?
+//char *buffer;//what is that?
 
 #endif

@@ -12,7 +12,7 @@ int sh_cd(char **args){
   char *old_path = getcwd(NULL, 0);//to be freed
   if(args[1] == NULL){
     chdir(getenv("HOME"));
-    if((path = getcwd(NULL, 0)) == NULL){//cannot obtain path to HOME
+    if((getcwd(path, ARG_BUF * sizeof(char))) == NULL){//cannot obtain path to HOME
       perror("getcwd() error");
     }
     reformat_path();
