@@ -18,7 +18,7 @@ int (*builtin_func[]) (char **) = {
 };
 
 void free_all() {
-  free(login);
+  //free(login);
   login = NULL;
   free(host);
   host = NULL;
@@ -29,22 +29,37 @@ void free_all() {
 int main(int argc, char **argv){
   size_t size = sizeof(char) * ARG_BUF;
 
-  login = calloc(1, size);//memeset in the same time
+  /*  login = calloc(1, size);//memeset in the same time
+  if(login == NULL) {
+    return 1;
+    }*/
+
   host = calloc(1, size);
+  if(host == NULL) {
+    free(login);
+    return 1;
+  }
+
   path = calloc(1, size);
+  if(path == NULL) {
+    free(login);
+    free(host);
+    return 1;
+  }
 
   set_input_mode();
 
   //get path
   char buf[ARG_BUF];
 
-  if((getcwd(buf, ARG_BUF * sizeof(char))) == NULL){//sizeof?
+  if((getcwd(buf, 8 * ARG_BUF * sizeof(char))) == NULL){//dirty hack
     perror("getcwd() error");
     free_all();
     return 1;
   }
 
   strcpy(path, buf);
+
   //get login
   if((login = getpwuid(getuid())->pw_name) == NULL){
     fprintf(stderr, "error, can't find login\n");
@@ -58,6 +73,7 @@ int main(int argc, char **argv){
     free_all();
     return 1;
   }
+
 
   reformat_path();
   sh_loop();
@@ -85,9 +101,11 @@ void sh_loop(void){
 
 char *read_line(){
   char *line = calloc(1, BUFFER_SIZE * sizeof(char));//maybe use an array here
-  if(!line){
-    fprintf(stderr, "cannot allocate memory");
+  if(line == NULL) {
+    fprintf(stderr, "cannot allocate memory\n");
+    return NULL;
   }
+
   //  char *orig = line;
   if((get_cmd(line)) == NULL){//line = not keep probably
     free(line);
@@ -109,12 +127,12 @@ char **read_args(char *line){//rename to parse
   }
 
   char **args = calloc(ARG_BUF, sizeof(char*));//table where to store the parsed version
+  if(args == NULL) {
+    fprintf(stderr, "cannot allocate memory\n");
+    return NULL;
+  }
   char **arg_orig = args;//pointer to the beginning of thez array
   char *readed = line;
-
-  if(!readed || !args){
-    fprintf(stderr, "cannot allocate memeory");
-  }
 
   char *orig = readed;//needed ?
 
@@ -137,7 +155,7 @@ char **read_args(char *line){//rename to parse
 
 int execute(char **args){
   printf("executing ..\n");
-  extern char *built_in[];
+  extern char *built_in[];//wtf
 
   if(args == NULL || *args[0] == '\0'){
     return 1;
