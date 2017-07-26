@@ -8,9 +8,7 @@ int nb_built_in(void){
 }
 
 int sh_cd(char **args){
-  //printf("cd\n");
-  //  char *old_path = getcwd(NULL, 0);//to be freed
-  if(args[1] == NULL){
+   if(args[1] == NULL){
     chdir(getenv("HOME"));
     if((getcwd(path, ARG_BUF * sizeof(char))) == NULL){//cannot obtain path to HOME
       perror("getcwd() error");
@@ -35,8 +33,7 @@ int sh_cd(char **args){
       reformat_path();
     }
   }
-  //printf("end cd\n");
-  //  free(old_path);
+
   return 1;
 }
 
@@ -47,7 +44,7 @@ int sh_help(char **args){
     printf("Use man -k to know more about commands not in this list\n");
     printf("Here is the list of builtin commands : \n");
 
-    for(int i = 0; i < nb_built_in(); ++i){//rewrite with **pointer increment
+    for(int i = 0; i < nb_built_in(); ++i){
       printf("%s\n", built_in[i]);
     }
 

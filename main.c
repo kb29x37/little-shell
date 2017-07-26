@@ -74,11 +74,10 @@ int main(int argc, char **argv){
     return 1;
   }
 
-
   reformat_path();
   sh_loop();
 
-  clean();//free the linked list segfault with 1 in the linked list
+  clean();
   free_all();
 
   return EXIT_SUCCESS;
@@ -198,8 +197,6 @@ int launch(char **args){
     //might find some better way to do this
   }
 
-  //free(args);
-
   return 1;
 }
 
@@ -214,7 +211,6 @@ int launch(char **args){
 
 void reformat_path(){
   char *curr = path;
-  char *old = path;
   char buf[64];
 
   //initialize the buffer to an empty one
