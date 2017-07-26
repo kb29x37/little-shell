@@ -9,7 +9,7 @@ int nb_built_in(void){
 
 int sh_cd(char **args){
   //printf("cd\n");
-  char *old_path = getcwd(NULL, 0);//to be freed
+  //  char *old_path = getcwd(NULL, 0);//to be freed
   if(args[1] == NULL){
     chdir(getenv("HOME"));
     if((getcwd(path, ARG_BUF * sizeof(char))) == NULL){//cannot obtain path to HOME
@@ -29,14 +29,14 @@ int sh_cd(char **args){
     if(chdir(args[1]) != 0){
       perror("chdir error");
     } else {
-      if((path = getcwd(NULL, 0)) == NULL){
+      if((getcwd(path, ARG_BUF * sizeof(char))) == NULL){
         perror("getcwd error");
       }
       reformat_path();
     }
   }
   //printf("end cd\n");
-  free(old_path);
+  //  free(old_path);
   return 1;
 }
 
