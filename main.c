@@ -52,7 +52,7 @@ int main(int argc, char **argv){
   //get path
   char buf[ARG_BUF];
 
-  if((getcwd(buf, 8 * ARG_BUF * sizeof(char))) == NULL){//dirty hack
+  if((getcwd(buf, ARG_BUF * sizeof(char))) == NULL){
     perror("getcwd() error");
     free_all();
     return 1;
